@@ -10,6 +10,10 @@ class Value:
         return f"Value (data = {self.data})"
 
     def __add__(self, other):
+        if isinstance(other, Value):
+            other = other
+        else:
+            other = Value(other)
         sum = self.data + other.data
         children = (self, other)
         output = Value(sum, children, '+')
@@ -21,7 +25,14 @@ class Value:
         output._backward = _backward
         return output        
         
+    def __radd__(self, other):
+        return self + other
+
     def __sub__(self, other):
+        if isinstance(other, Value):
+            other = other
+        else:
+            other = Value(other)
         difference = self.data - other.data
         children = (self, other)
         output = Value(difference, children, '-')
@@ -32,8 +43,15 @@ class Value:
 
         output._backward = _backward
         return output        
-        
+
+    def __rsub__(self, other):
+        return Value(other) - self
+
     def __mul__(self, other):
+        if isinstance(other, Value):
+            other = other
+        else:
+            other = Value(other)
         product = self.data * other.data
         children = (self, other)
         output = Value(product, children, '*')
@@ -44,6 +62,9 @@ class Value:
 
         output._backward = _backward
         return output
+
+    def __rmul__(self, other):
+        return self * other
 
     def backward(self):
         topo = []
@@ -65,7 +86,7 @@ if __name__ == "__main__":
     a = Value(2.0)
     b = Value(3.0)
     c = a * b
-    d = c + b
+    d = c + b + 2
     d.backward()
     print(f"d.grad: {d.grad}") 
     print(f"a.grad: {a.grad}")
