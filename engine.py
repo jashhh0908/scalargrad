@@ -103,11 +103,3 @@ class Value:
 
         output._backward = _backward
         return output
-
-if __name__ == "__main__":
-    a = Value(3.0)
-    b = a ** 2
-    b.backward()
-    
-    print(f"b.data: {b.data}") 
-    print(f"a.grad: {a.grad}") 
