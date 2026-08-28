@@ -82,6 +82,7 @@ if __name__ == "__main__":
         [0.5, 1.0, 1.0],
         [1.0, 1.0, -1.0]
     ]
+    alpha = 0.025
     outputs = [1.0, -1.0, -1.0, 1.0]
     for step in range(20):
         predictions = []
@@ -101,6 +102,6 @@ if __name__ == "__main__":
         loss.backward()
 
         for p in n.parameters():
-            p.data = p.data - (0.025 * p.grad)
+            p.data = p.data - (alpha * p.grad)
 
         print(f"Step {step}: Loss = {loss.data}")
