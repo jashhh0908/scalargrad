@@ -82,12 +82,32 @@ class Value:
         for node in reversed(topo):
             node._backward()
 
+    def __pow__(self, other):
+        assert isinstance(other, (int, float)), "only int/float input supported"
+        out_data = self.data ** other
+        output = Value(out_data, (self, ), "**")
+        def _backward():
+            local_derivative = other * (self.data ** (other - 1))
+            self.grad += local_derivative * output.grad
+        
+        output._backward = _backward
+        return output
+        
+    def relu(self):
+        out_data = self.data if self.data >= 0 else 0.0
+        output = Value(out_data, (self, ), 'ReLU')
+        
+        def _backward():
+            local_derivative = 1.0 if self.data > 0 else 0.0
+            self.grad += local_derivative * output.grad
+
+        output._backward = _backward
+        return output
+
 if __name__ == "__main__":
-    a = Value(2.0)
-    b = Value(3.0)
-    c = a * b
-    d = c + b + 2
-    d.backward()
-    print(f"d.grad: {d.grad}") 
-    print(f"a.grad: {a.grad}")
-    print(f"b.grad: {b.grad}") 
+    a = Value(3.0)
+    b = a ** 2
+    b.backward()
+    
+    print(f"b.data: {b.data}") 
+    print(f"a.grad: {a.grad}") 
